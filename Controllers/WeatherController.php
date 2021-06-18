@@ -60,6 +60,7 @@ class WeatherController
 
 				$dataId = [];
 				$dataTemMin = [];
+				$resultMin = 0;
 
 				foreach ($idCities as $llave => $idCity) {
 				    $urlProgress = "http://api.openweathermap.org/data/2.5/weather?id=" . $idCity["identificador_ciudad"] . "&lang=es&units=metric&APPID=" . $key;
@@ -74,12 +75,28 @@ class WeatherController
 					curl_close($chId);
 				    $dataId[$llave] = json_decode($responseId);
 				    $dataId = json_decode(json_encode($dataId),true);
-				    // $dataId = intval($dataId[$llave]["main"]["temp_max"]);
-				    // $dataId = min($dataId[$llave]["main"]["temp_max"]);
+				    $dataTempsMin = [
+				    	 $dataId[$llave]['main']['temp_min']
+				    ];
+				    $dataTempsMax = [
+				    	'dataTempsMax' => $dataId[$llave]['main']['temp_max']
+				    ];
+					$resultMin = min($dataTempsMin);
+					$resultMax = max($dataTempsMax);
+					$resultMin = $resultMin - 6;
+				    
 				}
+				$arrayTempMin = array_column($dataId, 'main');
+				$arrayTempMin = array_column($arrayTempMin, 'temp_min'); 
+				$arrayTempMin = array_search($resultMin, $arrayTempMin);
 
-
-				// echo max($dataId->main->temp_min);
+				$arrayTempMax = array_column($dataId, 'main');
+				$arrayTempMax = array_column($arrayTempMax, 'temp_max'); 
+				$arrayTempMax = array_search($resultMax, $arrayTempMax);
+				echo "<pre>";
+				// var_dump($dataId[$arrayTempMin]);
+				// var_dump($dataId[$arrayTempMax]);
+				echo "</pre>";
 
 				$datesWeather = [
 					'Descripcion_clima' => $data->weather[0]->description,
@@ -98,8 +115,8 @@ class WeatherController
 		            $mail->isSMTP();                                            // Send using SMTP
 		            $mail->Host       = 'smtp.gmail.com';                    // Set the SMTP server to send through
 		            $mail->SMTPAuth   = true;                                   // Enable SMTP authentication
-		            $mail->Username   = 'jnordonez7@misena.edu.co';                     // SMTP username
-		            $mail->Password   = 'Colombia2000';                               // SMTP password
+		            $mail->Username   = //poner aca correo electronico//;                     // SMTP username
+		            $mail->Password   = //poner aca contraseña del correo//;                               // SMTP password
 		            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;         // Enable TLS encryption; `PHPMailer::ENCRYPTION_SMTPS` encouraged
 		            $mail->Port       = 587;                                    // TCP port to connect to, use 465 for `PHPMailer::ENCRYPTION_SMTPS` above
 
@@ -110,38 +127,38 @@ class WeatherController
 		            // Content
 		            $mail->isHTML(true);                                  // Set email format to HTML
 		            $mail->Subject = 'Climas del pais';
-		            $html = '<h1>Climas del pais- Mas caliente y mas frio</h1>
+		            $html = '<h1>Climas del pais- Mas frio a mas caliente</h1>
 		                    <div class="card">
 						        <div class="card-header">
-						        	<h2>Estado del clima del:'.$dataId[2]["name"].'</h2>
+						        	<h2>Estado del clima del:'.$dataId[$arrayTempMin]["name"].'</h2>
 						            <div>'.date("l g:i a", $currentTime).'</div>
 						            <div>'.date("jS F, Y",$currentTime).'</div>
-						            <div>'.ucwords($dataId[2]["weather"][0]["description"]).'</div>
+						            <div>'.ucwords($dataId[$arrayTempMin]["weather"][0]["description"]).'</div>
 						        </div>
 						        <div class="card-body">
-						            <img src="http://openweathermap.org/img/w/'.$dataId[2]["weather"][0]["icon"].'.png" class="weather-icon" /> <br>
-						            '.$dataId[2]["main"]["temp_max"].'°C <br>
-						            <span class="min-temperature">'.$dataId[2]["main"]["temp_min"].'°C</span>
+						            <img src="http://openweathermap.org/img/w/'.$dataId[$arrayTempMin]["weather"][0]["icon"].'.png" class="weather-icon" /> <br>
+						            '.$dataId[$arrayTempMin]["main"]["temp_max"].'°C <br>
+						            <span class="min-temperature">'.$dataId[$arrayTempMin]["main"]["temp_min"].'°C</span>
 						        </div>
 						        <div class="card-footer">
-						            <div>Humedad: '.$dataId[2]["main"]["humidity"].' %</div>
-						            <div>Viento: '.$dataId[2]["wind"]["speed"] .' km/h</div>
+						            <div>Humedad: '.$dataId[$arrayTempMin]["main"]["humidity"].' %</div>
+						            <div>Viento: '.$dataId[$arrayTempMin]["wind"]["speed"] .' km/h</div>
 						        </div>
 					        </div>
 					        <div class="card">
 						        <div class="card-header">
-						        	<h2>Estado del clima del:'.$dataId[5]["name"].'</div>
+						        	<h2>Estado del clima del:'.$dataId[$arrayTempMax]["name"].'</div>
 						            <div>'.date("jS F, Y",$currentTime).'</div>
-						            <div>'.ucwords($dataId[5]["weather"][0]["description"]).'</div>
+						            <div>'.ucwords($dataId[$arrayTempMax]["weather"][0]["description"]).'</div>
 						        </div>
 						        <div class="card-body">
-						            <img src="http://openweathermap.org/img/w/'.$dataId[5]["weather"][0]["icon"].'.png" class="weather-icon" /> <br>
-						            '.$dataId[5]["main"]["temp_max"].'°C <br>
-						            <span class="min-temperature">'.$dataId[5]["main"]["temp_min"].'°C</span>
+						            <img src="http://openweathermap.org/img/w/'.$dataId[$arrayTempMax]["weather"][0]["icon"].'.png" class="weather-icon" /> <br>
+						            '.$dataId[$arrayTempMax]["main"]["temp_max"].'°C <br>
+						            <span class="min-temperature">'.$dataId[$arrayTempMax]["main"]["temp_min"].'°C</span>
 						        </div>
 						        <div class="card-footer">
-						            <div>Humedad: '.$dataId[5]["main"]["humidity"].' %</div>
-						            <div>Viento: '.$dataId[5]["wind"]["speed"] .' km/h</div>
+						            <div>Humedad: '.$dataId[$arrayTempMax]["main"]["humidity"].' %</div>
+						            <div>Viento: '.$dataId[$arrayTempMax]["wind"]["speed"] .' km/h</div>
 						        </div>
 					        </div>';
 		            $mail->Body = $html;
