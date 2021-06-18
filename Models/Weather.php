@@ -36,4 +36,15 @@ class Weather
 			die($e->getMessage());
 		}
 	}
+
+	public function getAllCities($country)
+	{
+		try {
+			$strSql = "SELECT * FROM ciudad WHERE nombre_pais = '$country' limit 20";
+			$query = $this->pdo->select($strSql);
+			return $query;
+		} catch (PDOException $e) {
+			die($e->getMessage());
+		}
+	}
 }

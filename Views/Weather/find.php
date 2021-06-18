@@ -11,6 +11,7 @@
 		    		<div class="col-12">
 		    			<div class="form-group">
 							<label>Ciudad de residencia*</label>
+							<input type="hidden" name="email" value="<?php echo $_SESSION['user']->Correo ?>">
 							<input list="city" name="city" class="form-control" placeholder="busca tu ciudad de residencia">
 							<datalist id="city">
 								<?php foreach ($cities as $city) { ?>

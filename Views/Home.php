@@ -15,10 +15,7 @@
 						<div class="card-body">
 							<form action="?controller=message&method=save" method="post">
 								<input type="hidden" name="id_us" value="<?php echo $_SESSION['user']->id?>">
-								<div class="form-group">
-									<label>Correo</label>
-									<input type="email" name="Correo_usuario" class="form-control" placeholder="test@test.com">
-								</div>
+								<input type="hidden" name="Correo_usuario" class="form-control" value="<?php echo $_SESSION['user']->Correo ?>">
 								<div class="form-group">
 									<label>Mensaje</label>
 									<textarea name="Mensaje" class="form-control"></textarea>
